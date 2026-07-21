@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import {
   ArrowRight, BarChart3, Zap, Shield, GitBranch, Bell, Users,
   Check, Star, ChevronDown, Sparkles,
@@ -20,11 +20,11 @@ const logos = ["Northloop", "Corvid", "Relay", "Atlas", "Driftly", "Nova"];
 
 const tiers = [
   { name: "Free", monthly: 0, annual: 0, blurb: "For side projects and early tinkering.",
-    features: ["Up to 10k events / mo", "3 dashboards", "7-day data history", "Community support"], cta: "Start free", highlight: false },
+    features: ["Up to 10k events / mo", "3 dashboards", "7-day data history", "Community support"], cta: "Start on Free", highlight: false },
   { name: "Pro", monthly: 49, annual: 39, blurb: "For teams that are starting to scale.",
-    features: ["Up to 1M events / mo", "Unlimited dashboards", "1-year data history", "Funnels & cohorts", "Slack alerts", "Priority support"], cta: "Start 14-day trial", highlight: true },
+    features: ["Up to 1M events / mo", "Unlimited dashboards", "1-year data history", "Funnels & cohorts", "Slack alerts", "Priority support"], cta: "Start on Pro", highlight: true },
   { name: "Scale", monthly: 499, annual: 399, blurb: "For companies that live in the data.",
-    features: ["Unlimited events", "SSO & SAML", "Unlimited history", "Data residency", "SOC 2 report", "Dedicated engineer"], cta: "Talk to sales", highlight: false },
+    features: ["Unlimited events", "SSO & SAML", "Unlimited history", "Data residency", "SOC 2 report", "Dedicated engineer"], cta: "Start on Scale", highlight: false },
 ];
 
 const faqs = [
@@ -38,6 +38,11 @@ const faqs = [
 export default function Landing() {
   const [annual, setAnnual] = useState(true);
   const [openFaq, setOpenFaq] = useState<number | null>(0);
+  const navigate = useNavigate();
+  const startOn = (plan: "Free" | "Pro" | "Scale") => {
+    try { localStorage.setItem("pulse.plan", JSON.stringify(plan)); } catch { /* ignore */ }
+    navigate("/dashboard");
+  };
 
   return (
     <div className="min-h-screen">
@@ -167,14 +172,14 @@ export default function Landing() {
                 <span className="text-4xl font-bold tracking-tight text-white">${annual ? t.annual : t.monthly}</span>
                 <span className="mb-1 text-sm text-zinc-500">/mo</span>
               </div>
-              <Link
-                to="/dashboard"
+              <button
+                onClick={() => startOn(t.name as "Free" | "Pro" | "Scale")}
                 className={`mt-6 rounded-xl px-4 py-3 text-center text-sm font-semibold transition ${
                   t.highlight ? "bg-white text-zinc-900 hover:bg-zinc-200" : "border border-white/10 bg-white/5 text-white hover:bg-white/10"
                 }`}
               >
                 {t.cta}
-              </Link>
+              </button>
               <ul className="mt-8 space-y-3">
                 {t.features.map((f) => (
                   <li key={f} className="flex items-start gap-2.5 text-sm text-zinc-300">
